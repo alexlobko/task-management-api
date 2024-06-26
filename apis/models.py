@@ -32,7 +32,7 @@ class RegulatoryDocument(models.Model):
     status = models.BooleanField(default=False)
 
     def update_status(self):
-        self.status = all(task.status for task in self.tasks.all())
+        self.status = all(task.status == 'Исполнено' for task in self.tasks.all())
         self.save()
 
 
