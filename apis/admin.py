@@ -7,7 +7,7 @@ from apis.models import RegulatoryDocument, Task
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('id', 'content', 'main_executor', 'get_co_executors', 'deadline', 'status_display')
+    list_display = ('id', 'content', 'main_executor', 'get_co_executors', 'get_regulatory_documents', 'deadline', 'status_display')
     list_filter = ('content', 'main_executor', 'co_executors__full_name', 'deadline', 'status')
     search_fields = ('content', 'main_executor__username', 'main_executor__full_name', 'co_executors__username',
                      'co_executors__full_name')
@@ -18,6 +18,10 @@ class TaskAdmin(admin.ModelAdmin):
 
     get_co_executors.short_description = 'Co-Executors'
 
+    def get_regulatory_documents(self, obj):
+        return ", ".join([doc.__str__() for doc in obj.regulatory_documents.all()])
+
+    get_regulatory_documents.short_description = 'Regulatory Documents'
     def status_display(self, obj):
         if obj.status == 'Не исполнено':
             if obj.deadline:
@@ -36,9 +40,12 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(RegulatoryDocument)
 class RegulatoryDocumentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'full_name', 'doc_type', 'date_approved', 'registration_number', 'status')
-    list_filter = ('status', 'doc_type')
+    list_display = ('id', 'full_name', 'doc_type', 'date_approved', 'registration_number', 'get_tasks', 'status')
+    list_filter = ('doc_type', 'status', 'doc_type')
     search_fields = ('full_name', 'registration_number', 'tasks__content')
     filter_horizontal = ('tasks',)
 
+    def get_tasks(self, obj):
+        return "\n ".join([task.__str__() for task in obj.tasks.all()])
 
+    get_tasks.short_description = 'Tasks'
