@@ -12,7 +12,7 @@ class CustomUser(AbstractUser):
     user_permissions = models.ManyToManyField(Permission, related_name='customuser_set', blank=True)
 
     def __str__(self):
-        return self.username
+        return self.full_name
 
     def delete(self, *args, **kwargs):
         from apis.models import Task
