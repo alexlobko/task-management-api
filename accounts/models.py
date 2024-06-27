@@ -8,7 +8,6 @@ class CustomUser(AbstractUser):
     full_name = models.CharField(max_length=100)
     position = models.CharField(max_length=100)
     deputy = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='deputy_of')
-    groups = models.ManyToManyField(Group, related_name='customuser_set', blank=True)
     user_permissions = models.ManyToManyField(Permission, related_name='customuser_set', blank=True)
 
     def __str__(self):
@@ -29,3 +28,11 @@ class CustomUser(AbstractUser):
                 task.co_executors.remove(self)
                 task.co_executors.add(deputy)
         super().delete(*args, **kwargs)
+
+    @property
+    def main_tasks(self):
+        return self.main_tasks.all()
+
+    @property
+    def co_executors_tasks(self):
+        return self.co_tasks.all()
