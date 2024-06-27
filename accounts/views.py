@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, generics
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from accounts.models import CustomUser
@@ -20,3 +21,11 @@ class CustomUserViewSet(viewsets.ReadOnlyModelViewSet):
         user = self.get_object()
         serializer = CustomUserDetailSerializer(user)
         return Response(serializer.data)
+
+
+class CurrentUserDetailView(generics.RetrieveAPIView):
+    serializer_class = CustomUserDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

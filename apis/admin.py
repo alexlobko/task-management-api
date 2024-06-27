@@ -7,9 +7,9 @@ from apis.models import RegulatoryDocument, Task
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('id', 'content', 'main_executor', 'get_co_executors', 'get_regulatory_documents', 'deadline', 'status_display')
-    list_filter = ('content', 'main_executor', 'co_executors__full_name', 'deadline', 'status')
-    search_fields = ('content', 'main_executor__username', 'main_executor__full_name', 'co_executors__username',
+    list_display = ('id', 'content', 'main_executor', 'get_co_executors', 'regulation' , 'deadline', 'status_display')
+    list_filter = ('content', 'main_executor', 'co_executors__full_name', 'deadline', 'regulation', 'status')
+    search_fields = ('content', 'main_executor__username', 'main_executor__full_name', 'regulation', 'co_executors__username',
                      'co_executors__full_name')
     filter_horizontal = ('co_executors',)
 
@@ -18,10 +18,10 @@ class TaskAdmin(admin.ModelAdmin):
 
     get_co_executors.short_description = 'Co-Executors'
 
-    def get_regulatory_documents(self, obj):
-        return ", ".join([doc.__str__() for doc in obj.regulatory_documents.all()])
-
-    get_regulatory_documents.short_description = 'Regulatory Documents'
+    # def get_regulatory_documents(self, obj):
+    #     return ", ".join([doc.__str__() for doc in obj.regulation.all()])
+    #
+    # get_regulatory_documents.short_description = 'Regulatory Documents'
     def status_display(self, obj):
         if obj.status == 'Не исполнено':
             if obj.deadline:
@@ -41,11 +41,10 @@ class TaskAdmin(admin.ModelAdmin):
 @admin.register(RegulatoryDocument)
 class RegulatoryDocumentAdmin(admin.ModelAdmin):
     list_display = ('id', 'full_name', 'doc_type', 'date_approved', 'registration_number', 'get_tasks', 'status')
-    list_filter = ('doc_type', 'status', 'doc_type')
+    list_filter = ('doc_type', 'status', 'registration_number')
     search_fields = ('full_name', 'registration_number', 'tasks__content')
-    filter_horizontal = ('tasks',)
 
     def get_tasks(self, obj):
-        return "\n ".join([task.__str__() for task in obj.tasks.all()])
+        return " | ".join([f'{task.__str__()} - {task.status}' for task in obj.tasks_of_regulation.all()])
 
     get_tasks.short_description = 'Tasks'

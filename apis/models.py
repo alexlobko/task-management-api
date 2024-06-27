@@ -11,7 +11,9 @@ class Task(models.Model):
     main_executor = models.ForeignKey(CustomUser, related_name='main_tasks', on_delete=models.CASCADE)
     co_executors = models.ManyToManyField(CustomUser, related_name='co_tasks', blank=True)
     deadline = models.DateField(blank=True, null=True)
+    regulation = models.ForeignKey('RegulatoryDocument', related_name='tasks_of_regulation', on_delete=models.CASCADE, blank=True, null=True)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='Не исполнено')
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.content[:30]} до {self.deadline}'
@@ -28,11 +30,11 @@ class RegulatoryDocument(models.Model):
     date_approved = models.DateField()
     registration_number = models.CharField(max_length=100)
     full_name = models.CharField(max_length=255)
-    tasks = models.ManyToManyField('Task', related_name='regulatory_documents', blank=True)
+    # tasks = models.ManyToManyField('Task', related_name='regulatory_documents', blank=True)
     status = models.BooleanField(default=False)
 
     def update_status(self):
-        self.status = all(task.status == 'Исполнено' for task in self.tasks.all())
+        self.status = all(task.status == 'Исполнено' for task in self.tasks_of_regulation.all())
         self.save()
 
 
