@@ -4,7 +4,8 @@ from .models import Task, RegulatoryDocument
 
 @receiver(post_save, sender=Task)
 def update_document_status_on_task_save(sender, instance, **kwargs):
-    instance.regulation.update_status()
+    if instance.regulation:
+        instance.regulation.update_status()
 
 # @receiver(m2m_changed, sender=RegulatoryDocument.tasks_of_regulation.through)
 # def update_document_status_on_m2m_change(sender, instance, action, **kwargs):

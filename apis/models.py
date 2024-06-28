@@ -9,7 +9,7 @@ class Task(models.Model):
     ]
     content = models.TextField()
     main_executor = models.ForeignKey(CustomUser, related_name='main_tasks', on_delete=models.CASCADE)
-    co_executors = models.ManyToManyField(CustomUser, related_name='co_tasks', blank=True)
+    co_executors = models.ManyToManyField(CustomUser, related_name='co_tasks', blank=True, null=True)
     deadline = models.DateField(blank=True, null=True)
     regulation = models.ForeignKey('RegulatoryDocument', related_name='tasks_of_regulation', on_delete=models.CASCADE, blank=True, null=True)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='Не исполнено')
@@ -39,6 +39,6 @@ class RegulatoryDocument(models.Model):
 
 
     def __str__(self):
-        return f"{self.doc_type} от {self.date_approved} №{self.registration_number}"
+        return f"{self.full_name} от {self.date_approved} №{self.registration_number}"
 
 
